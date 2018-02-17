@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,18 @@ public class DataFeedActivity extends AppCompatActivity {
             Log.i("Receiveddddddddddddddddddd", String.valueOf(context));
             Bundle bundle = intent.getExtras();
             if(bundle != null) {
+                String title = bundle.getString(DataFeedService.TITLE);
+                if(StringUtils.isValid(title)) {
+                    android.app.ActionBar actionBar = getActionBar();
+                    if(actionBar != null) {
+                        actionBar.setTitle(title);
+                    } else {
+                        ActionBar aBar = getSupportActionBar();
+                        if(aBar != null) {
+                            aBar.setTitle(title);
+                        }
+                    }
+                }
                 Parcelable[] result = bundle.getParcelableArray(DataFeedService.RESULT);
                 List<DataFeed> feeds = new ArrayList<>();
                 for (int i = 0; i < result.length; i++) {
