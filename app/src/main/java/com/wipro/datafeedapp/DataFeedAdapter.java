@@ -2,6 +2,7 @@ package com.wipro.datafeedapp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -59,7 +60,8 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
         if(image != null) {
             imgView.setImageBitmap(image);
         } else {
-            new ImageDownloadTask(this, imgView, imgUrl).execute();
+            ImageDownloadTask task = new ImageDownloadTask(this, imgView, imgUrl);
+            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
         return dataFeedView;
     }
