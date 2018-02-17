@@ -2,7 +2,6 @@ package com.wipro.datafeedapp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -14,8 +13,9 @@ import android.widget.TextView;
 
 import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
 
-import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Custom Adapter class for the Data Feed App
@@ -24,9 +24,15 @@ import java.util.List;
 
 public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
 
+    private Map<String, Bitmap> imageCache;
 
-    public DataFeedAdapter(@NonNull Context context, int resource, @NonNull List<DataFeed> objects) {
+    public DataFeedAdapter(RetainFragment fragment, @NonNull Context context, int resource, @NonNull List<DataFeed> objects) {
         super(context, resource, objects);
+        this.imageCache = fragment.mRetainedCache;
+        if(this.imageCache == null) {
+            this.imageCache = new HashMap<>();
+            fragment.mRetainedCache = this.imageCache;
+        }
     }
 
     public void refresh(List<DataFeed> newData) {
@@ -48,17 +54,20 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
         TextView descView = dataFeedView.findViewById(R.id.descriptionView);
         descView.setText(feed.getDescription());
         ImageView imgView = dataFeedView.findViewById(R.id.imageView);
-        try {
-            URL url = new URL(feed.getImageHref());
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            imgView.setImageBitmap(null);
-            imgView.setImageBitmap(bmp);
-        } catch(Exception ex) {
-            ex.printStackTrace();
+        String imgUrl = feed.getImageHref();
+        Bitmap image = imageCache.get(imgUrl);
+        if(image != null) {
+            imgView.setImageBitmap(image);
+        } else {
+            new ImageDownloadTask(this, imgView, imgUrl).execute();
         }
-//        imgView.setImageURI(Uri.parse(feed.getImageHref()));
-
         return dataFeedView;
-
     }
+
+    public void updateImageView(ImageView imgView, Bitmap img, String url) {
+        imageCache.put(url, img);
+        imgView.setImageBitmap(img);
+    }
+
+
 }

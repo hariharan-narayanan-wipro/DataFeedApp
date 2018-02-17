@@ -58,15 +58,12 @@ public class DataFeedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-//                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-//                "Linux", "OS/2" };
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-//                android.R.layout.simple_list_item_1, values);
         setContentView(R.layout.feeds_list);
         feedsList = findViewById(R.id.feeds_list);
         List<DataFeed> feeds = new ArrayList<>();
-        DataFeedAdapter adapter = new DataFeedAdapter(this, R.layout.activity_data_feed, feeds);
+        RetainFragment retainFragment =
+                RetainFragment.findOrCreateRetainFragment(getFragmentManager());
+        DataFeedAdapter adapter = new DataFeedAdapter(retainFragment, this, R.layout.activity_data_feed, feeds);
         feedsList.setAdapter(adapter);
         fetchFeeds();
         Toast.makeText(this, "Starting fetch", Toast.LENGTH_LONG).show();
