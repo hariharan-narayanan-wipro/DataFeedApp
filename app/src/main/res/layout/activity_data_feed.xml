@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:context="com.wipro.datafeedapp.DataFeedActivity">
 
-    <TableRow>
-        <TextView
-            android:id="@+id/titleView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="0dp"
-            android:text="TextView" />
-    </TableRow>
+    <TextView
+        android:id="@+id/titleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="0dp"
+        android:layout_weight="1"
+        android:text="TextView" />
 
 
-    <TableRow>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/titleView">
         <TextView
             android:id="@+id/descriptionView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="10"
+            android:layout_weight="9"
+            android:layout_gravity="fill_horizontal"
             android:text="TextView" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
-            android:layout_height="400px"
-            android:layout_weight="5"
-            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/beaver"/>
+    </LinearLayout>
 
-            />
-    </TableRow>
 
-</TableLayout>
+</RelativeLayout>
