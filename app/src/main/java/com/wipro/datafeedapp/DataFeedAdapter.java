@@ -26,8 +26,10 @@ import java.util.Map;
 
 public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
 
+    //Map to cache the images.
     private Map<String, Bitmap> imageCache;
 
+    //Bitmap image to display when the actual image could not be fetched.
     private Bitmap noImgBitmap;
 
     public DataFeedAdapter(RetainFragment fragment, @NonNull Context context, int resource, @NonNull List<DataFeed> objects) {
@@ -35,6 +37,7 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
         this.imageCache = fragment.mRetainedCache;
         if(this.imageCache == null) {
             this.imageCache = new HashMap<>();
+            imageCache.put(DataFeed.NULL_IMAGE_REF, null);
             fragment.mRetainedCache = this.imageCache;
         }
         try {
@@ -45,6 +48,10 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
         }
     }
 
+    /**
+     * Refreshes the list view with the new set of data
+     * @param newData
+     */
     public void refresh(List<DataFeed> newData) {
         clear();
         addAll(newData);
@@ -66,7 +73,9 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
         ImageView imgView = dataFeedView.findViewById(R.id.imageView);
         String imgUrl = feed.getImageHref();
         Bitmap image = imageCache.get(imgUrl);
-        if(image != null) {
+        if(DataFeed.NULL_IMAGE_REF.equals(imgUrl)) {
+            imgView.setImageBitmap(image);
+        } else if(image != null) {
             imgView.setImageBitmap(image);
         } else {
             ImageDownloadTask task = new ImageDownloadTask(this, imgView, imgUrl);
@@ -75,6 +84,12 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
         return dataFeedView;
     }
 
+    /**
+     * Method where the image is added to the map and set to the view for the first time.
+     * @param imgView
+     * @param img
+     * @param url
+     */
     public void updateImageView(ImageView imgView, Bitmap img, String url) {
         if(img == null) {
             img = this.noImgBitmap;

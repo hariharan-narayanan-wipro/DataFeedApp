@@ -10,15 +10,16 @@ import com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
+ * Service class to fetch the JSON data from the URL
  * Created by Hariharan on 17/02/18.
  */
 
@@ -40,6 +41,12 @@ public class DataFeedService extends IntentService {
 
     public static final String RESULT = "RESULT";
 
+    public static final String STATUS_KEY = "STATUS_KEY";
+
+    public static final String ERROR_MSG = "ERROR_MSG";
+
+    public enum STATUS {OK, ERROR};
+
 
     public DataFeedService() {
         this("Data Feed Service");
@@ -51,60 +58,85 @@ public class DataFeedService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        InputStream stream = null;
-        FileOutputStream fos = null;
         List<DataFeed> feeds = new ArrayList<>();
         String feedTitle = "";
+        STATUS status = STATUS.OK;
+        String errorMsg = null;
         try {
+            String jsonData = readJsonFromUrl();
+            Map<String, List<DataFeed>> resultData = parseFeeds(jsonData);
+            Map.Entry<String, List<DataFeed>> data = resultData.entrySet().iterator().next();
+            feedTitle = data.getKey();
+            feeds = data.getValue();
 
-            URL url = new URL(FETCH_URL);
-            stream = url.openConnection().getInputStream();
-            InputStreamReader reader = new InputStreamReader(stream);
+        } catch (Exception e) {
+            status = STATUS.ERROR;
+            errorMsg = e.getMessage();
+        }
+        broadcastResult(feedTitle, feeds, status, errorMsg);
+    }
+
+    //fetch the json data from the url
+    private String readJsonFromUrl() throws Exception {
+        InputStream stream = null;
+        InputStreamReader reader = null;
+        try {
+            stream = new HttpHandler(FETCH_URL).getInputStream();
+            reader = new InputStreamReader(stream);
             StringBuilder jsonStr = new StringBuilder();
-
             int next = -1;
             while ((next = reader.read()) != -1) {
                 jsonStr.append((char) next);
             }
-            JSONObject data = new JSONObject(jsonStr.toString());
-            feedTitle = data.getString(TITLE);
-            JSONArray feedsArr = data.getJSONArray(ROWS);
-            for (int i = 0; i < feedsArr.length(); i++) {
-                JSONObject obj = feedsArr.getJSONObject(i);
-                String title = obj.getString(TITLE);
-                String desc = obj.getString(DESCRIPTION);
-                String imgHref = obj.getString(HREF);
-                feeds.add(new DataFeed(title, desc, imgHref));
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            return jsonStr.toString();
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //do nothing
                 }
-            }
-            if (fos != null) {
+            } if (reader != null) {
                 try {
-                    fos.close();
+                    reader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //do nothing
                 }
             }
         }
+    }
+
+    // parse the feed json and create DataFeed objects.Put it against the title as the key in the map
+    // and return the result
+    private Map<String, List<DataFeed>> parseFeeds(String jsonStr) throws Exception {
+        JSONObject data = new JSONObject(jsonStr.toString());
+        String feedTitle = data.getString(TITLE);
         if(!StringUtils.isValid(feedTitle)) {
             feedTitle = FETCH_URL;
         }
-        broadcastResult(feedTitle, feeds);
+        List<DataFeed> allFeeds = new ArrayList<>();
+        JSONArray feedsArr = data.getJSONArray(ROWS);
+        for (int i = 0; i < feedsArr.length(); i++) {
+            JSONObject obj = feedsArr.getJSONObject(i);
+            String title = obj.getString(TITLE);
+            String desc = obj.getString(DESCRIPTION);
+            String imgHref = obj.getString(HREF);
+            allFeeds.add(new DataFeed(title, desc, imgHref));
+        }
+        Map<String, List<DataFeed>> result = new HashMap<>();
+        result.put(feedTitle, allFeeds);
+        return result;
     }
 
-    private void broadcastResult(String feedTitle, List<DataFeed> feeds) {
+    //send out the results after completion
+    private void broadcastResult(String feedTitle, List<DataFeed> feeds, STATUS status, String error) {
         Intent intent = new Intent(BROADCAST_RECEIVER_ID);
         intent.putExtra(TITLE, feedTitle);
         intent.putExtra(RESULT, feeds.toArray(new DataFeed[0]));
+        intent.putExtra(STATUS_KEY, status);
+        if(status != STATUS.OK) {
+            intent.putExtra(ERROR_MSG, error);
+        }
         sendBroadcast(intent);
     }
 

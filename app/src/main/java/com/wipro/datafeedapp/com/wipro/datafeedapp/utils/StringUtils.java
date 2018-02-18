@@ -1,7 +1,8 @@
 package com.wipro.datafeedapp.com.wipro.datafeedapp.utils;
 
 /**
- * Created by UshaHari on 17/02/18.
+ * Utility class for common String operations.
+ * Created by Hariharan on 17/02/18.
  */
 
 public class StringUtils {

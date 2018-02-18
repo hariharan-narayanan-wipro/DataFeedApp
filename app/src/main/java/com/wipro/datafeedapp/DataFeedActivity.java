@@ -1,11 +1,8 @@
 package com.wipro.datafeedapp;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -20,52 +17,18 @@ import com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Main activity class. When this activity starts up the service to fetch feeds is started in the background.
+ */
 public class DataFeedActivity extends AppCompatActivity {
 
+    //ListView to hold the feeds
     private ListView feedsList;
 
+    //Main menu
     private Menu menu;
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            long start = System.currentTimeMillis();
-            Bundle bundle = intent.getExtras();
-            if(bundle != null) {
-                String title = bundle.getString(DataFeedService.TITLE);
-                if(StringUtils.isValid(title)) {
-                    android.app.ActionBar actionBar = getActionBar();
-                    if(actionBar != null) {
-                        actionBar.setTitle(title);
-                    } else {
-                        ActionBar aBar = getSupportActionBar();
-                        if(aBar != null) {
-                            aBar.setTitle(title);
-                        }
-                    }
-                }
-                Parcelable[] result = bundle.getParcelableArray(DataFeedService.RESULT);
-                List<DataFeed> feeds = new ArrayList<>();
-                for (int i = 0; i < result.length; i++) {
-                    if(result[i] instanceof DataFeed) {
-                        DataFeed feed = (DataFeed) result[i];
-                        if(feed.isFeedValid()) {
-                            feeds.add(feed);
-                        }
-                    }
-                }
-                feedsList.invalidate();
-                DataFeedAdapter adapter = (DataFeedAdapter) feedsList.getAdapter();
-                adapter.refresh(feeds);
-            } else {
-                Toast.makeText(DataFeedActivity.this, "Could not get the data from the feed", Toast.LENGTH_LONG).show();
-            }
-            MenuItem refreshItem = menu.findItem(R.id.action_refresh);
-            refreshItem.setEnabled(true);
-            stopFeedService();
-            Toast.makeText(DataFeedActivity.this, "Finished in " + ((System.currentTimeMillis() - start)/1000) + " seconds", Toast.LENGTH_LONG).show();
-        }
-    };
+    private FeedReceiver receiver = new FeedReceiver(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +63,14 @@ public class DataFeedActivity extends AppCompatActivity {
 
     private void fetchFeeds() {
         Toast.makeText(this, "Fetching data...", Toast.LENGTH_LONG).show();
-        Intent feedIntent = new Intent(this, DataFeedService.class);
-        startService(feedIntent);
+        //start the service from a separate thread so that it does not affect the main thread in case of connection problems
+        new Thread() {
+            @Override
+            public void run() {
+                Intent feedIntent = new Intent(DataFeedActivity.this, DataFeedService.class);
+                startService(feedIntent);
+            }
+        }.start();
     }
 
     @Override
@@ -122,8 +91,43 @@ public class DataFeedActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    private void stopFeedService() {
+    /**
+     * Stops the DataFeedService instance if running.
+     */
+    public void stopFeedService() {
         Intent feedIntent = new Intent(this, DataFeedService.class);
         stopService(feedIntent);
+    }
+
+    public ListView getFeedsList() {
+        return this.feedsList;
+    }
+
+    /**
+     * Sets the menu item specified by menuId to enabled or disabled state
+     * @param menuId
+     * @param state
+     */
+    public void setMenuState(int menuId, boolean state) {
+        MenuItem refreshItem = menu.findItem(menuId);
+        refreshItem.setEnabled(state);
+    }
+
+    /**
+     * Updates the title for the action bar.
+     * @param newTitle
+     */
+    public void updateTitle(String newTitle) {
+        if(StringUtils.isValid(newTitle)) {
+            android.app.ActionBar actionBar = getActionBar();
+            if(actionBar != null) {
+                actionBar.setTitle(newTitle);
+            } else {
+                ActionBar aBar = getSupportActionBar();
+                if(aBar != null) {
+                    aBar.setTitle(newTitle);
+                }
+            }
+        }
     }
 }

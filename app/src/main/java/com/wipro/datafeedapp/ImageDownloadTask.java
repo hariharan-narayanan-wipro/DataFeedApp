@@ -5,12 +5,13 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
+import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 /**
- * Created by UshaHari on 17/02/18.
+ * Background task class for image downloading. This is used for the first time and then the image
+ * is cached in memory.
+ * Created by Hariharan on 17/02/18.
  */
 
 public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
@@ -29,8 +30,9 @@ public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
 
     @Override
     protected Bitmap doInBackground(Void... none) {
+        InputStream stream = null;
         try {
-            InputStream stream = getInputStream();
+            stream = new HttpHandler(imgUrl).getInputStream();
             if(stream == null) {
                 return null;
             }
@@ -38,27 +40,16 @@ public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
             return bmp;
         } catch(Exception ex) {
             ex.printStackTrace();
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    //do nothing
+                }
+            }
         }
         return null;
-    }
-
-    private InputStream getInputStream() throws Exception {
-        URL url = new URL(imgUrl);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-        int respCode = conn.getResponseCode();
-        //check if redirected to another page
-        if(respCode == HttpURLConnection.HTTP_MOVED_PERM ||
-                respCode == HttpURLConnection.HTTP_MOVED_TEMP ||
-                respCode == HttpURLConnection.HTTP_SEE_OTHER) {
-            String newUrl = conn.getHeaderField("Location");
-            conn = (HttpURLConnection) new URL(newUrl).openConnection();
-        }
-        try {
-            return conn.getInputStream();
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     @Override

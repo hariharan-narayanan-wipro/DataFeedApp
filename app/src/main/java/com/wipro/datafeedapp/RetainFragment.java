@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class RetainFragment extends Fragment {
     private static final String TAG = "RetainFragment";
+
     public Map<String, Bitmap> mRetainedCache;
 
     public RetainFragment() {}

@@ -23,6 +23,12 @@ public class DataFeed implements Parcelable {
 
     private static final String DEFUALT_HREF = "No Image URL";
 
+    /**
+     * This key is used to store a bitmap which is null in the data feed adapter.
+     * Used during errors.
+     */
+    public static final String NULL_IMAGE_REF = "nullImage";
+
     private String title;
 
     private String description;
