@@ -31,12 +31,14 @@ public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
     protected Bitmap doInBackground(Void... none) {
         try {
             InputStream stream = getInputStream();
+            if(stream == null) {
+                return null;
+            }
             Bitmap bmp = BitmapFactory.decodeStream(stream);
             return bmp;
         } catch(Exception ex) {
             ex.printStackTrace();
         }
-
         return null;
     }
 
@@ -52,7 +54,11 @@ public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
             String newUrl = conn.getHeaderField("Location");
             conn = (HttpURLConnection) new URL(newUrl).openConnection();
         }
-        return conn.getInputStream();
+        try {
+            return conn.getInputStream();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     @Override

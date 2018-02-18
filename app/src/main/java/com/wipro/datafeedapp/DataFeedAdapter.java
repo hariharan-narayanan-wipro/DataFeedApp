@@ -2,6 +2,7 @@ package com.wipro.datafeedapp;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -27,12 +28,20 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
 
     private Map<String, Bitmap> imageCache;
 
+    private Bitmap noImgBitmap;
+
     public DataFeedAdapter(RetainFragment fragment, @NonNull Context context, int resource, @NonNull List<DataFeed> objects) {
         super(context, resource, objects);
         this.imageCache = fragment.mRetainedCache;
         if(this.imageCache == null) {
             this.imageCache = new HashMap<>();
             fragment.mRetainedCache = this.imageCache;
+        }
+        try {
+            //load the no image bitmap once
+            this.noImgBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.no_image);
+        } catch (Exception e) {
+            //do nothing
         }
     }
 
@@ -67,6 +76,9 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
     }
 
     public void updateImageView(ImageView imgView, Bitmap img, String url) {
+        if(img == null) {
+            img = this.noImgBitmap;
+        }
         imageCache.put(url, img);
         imgView.setImageBitmap(img);
     }
