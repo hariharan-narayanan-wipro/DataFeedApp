@@ -39,7 +39,7 @@ public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
             Bitmap bmp = BitmapFactory.decodeStream(stream);
             return bmp;
         } catch(Exception ex) {
-            ex.printStackTrace();
+//            ex.printStackTrace();
         } finally {
             if(stream != null) {
                 try {

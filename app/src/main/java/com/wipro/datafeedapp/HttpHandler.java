@@ -19,20 +19,15 @@ public class HttpHandler {
 
     public InputStream getInputStream() throws Exception {
         URL url = new URL(urlString);
-        HttpURLConnection conn = null;
-        try {
-            conn = (HttpURLConnection) url.openConnection();
-            int respCode = conn.getResponseCode();
-            //check if redirected to another page
-            if(respCode == HttpURLConnection.HTTP_MOVED_PERM ||
-                    respCode == HttpURLConnection.HTTP_MOVED_TEMP ||
-                    respCode == HttpURLConnection.HTTP_SEE_OTHER) {
-                String newUrl = conn.getHeaderField("Location");
-                conn = (HttpURLConnection) new URL(newUrl).openConnection();
-            }
-            return conn.getInputStream();
-        } catch (Exception ex) {
-            return null;
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        int respCode = conn.getResponseCode();
+        //check if redirected to another page
+        if(respCode == HttpURLConnection.HTTP_MOVED_PERM ||
+                respCode == HttpURLConnection.HTTP_MOVED_TEMP ||
+                respCode == HttpURLConnection.HTTP_SEE_OTHER) {
+            String newUrl = conn.getHeaderField("Location");
+            conn = (HttpURLConnection) new URL(newUrl).openConnection();
         }
+        return conn.getInputStream();
     }
 }
