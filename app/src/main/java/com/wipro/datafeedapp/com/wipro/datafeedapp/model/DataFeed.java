@@ -103,8 +103,8 @@ public class DataFeed implements Parcelable {
     }
 
     public boolean isFeedValid() {
-        return !title.trim().equals(DEFAULT_TITLE) &&
-                !description.trim().equals(DEFAULT_DESC) &&
-                !imageHref.trim().equals(DEFUALT_HREF);
+        return !(title.trim().equals(DEFAULT_TITLE) &&
+                description.trim().equals(DEFAULT_DESC) &&
+                imageHref.trim().equals(DEFUALT_HREF));
     }
 }

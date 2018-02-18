@@ -45,6 +45,12 @@ public class DataFeedService extends IntentService {
 
     public static final String ERROR_MSG = "ERROR_MSG";
 
+    private static final String NULL_JSON_MSG = "Could not get the JSON data from the server";
+
+    private static final Exception INVALID_JSON_DATA = new Exception("Invalid JSON data");
+
+    private static final String NO_DATA_AVAILABLE = "No Data Available!!";
+
     public enum STATUS {OK, ERROR};
 
 
@@ -64,10 +70,15 @@ public class DataFeedService extends IntentService {
         String errorMsg = null;
         try {
             String jsonData = readJsonFromUrl();
-            Map<String, List<DataFeed>> resultData = parseFeeds(jsonData);
-            Map.Entry<String, List<DataFeed>> data = resultData.entrySet().iterator().next();
-            feedTitle = data.getKey();
-            feeds = data.getValue();
+            if(!StringUtils.isValid(jsonData)) {
+                status = STATUS.ERROR;
+                errorMsg = NULL_JSON_MSG;
+            } else {
+                Map<String, List<DataFeed>> resultData = parseFeeds(jsonData);
+                Map.Entry<String, List<DataFeed>> data = resultData.entrySet().iterator().next();
+                feedTitle = data.getKey();
+                feeds = data.getValue();
+            }
 
         } catch (Exception e) {
             status = STATUS.ERROR;
@@ -110,19 +121,38 @@ public class DataFeedService extends IntentService {
     // and return the result
     private Map<String, List<DataFeed>> parseFeeds(String jsonStr) throws Exception {
         JSONObject data = new JSONObject(jsonStr.toString());
-        String feedTitle = data.getString(TITLE);
+        String feedTitle = null;
+        if(data.has(TITLE)) {
+            feedTitle = data.getString(TITLE);
+        } else {
+            throw new Exception("'title' property not found", INVALID_JSON_DATA);
+        }
         if(!StringUtils.isValid(feedTitle)) {
             feedTitle = FETCH_URL;
         }
         List<DataFeed> allFeeds = new ArrayList<>();
-        JSONArray feedsArr = data.getJSONArray(ROWS);
-        for (int i = 0; i < feedsArr.length(); i++) {
-            JSONObject obj = feedsArr.getJSONObject(i);
-            String title = obj.getString(TITLE);
-            String desc = obj.getString(DESCRIPTION);
-            String imgHref = obj.getString(HREF);
-            allFeeds.add(new DataFeed(title, desc, imgHref));
+        if(!data.has(ROWS)) {
+            throw new Exception("'rows' property not found", INVALID_JSON_DATA);
         }
+        JSONArray feedsArr = data.getJSONArray(ROWS);
+        if(feedsArr.length() == 0) {
+            allFeeds.add(new DataFeed( NO_DATA_AVAILABLE, "No feed to show", DataFeed.NULL_IMAGE_REF));
+        } else {
+            for (int i = 0; i < feedsArr.length(); i++) {
+                JSONObject obj = feedsArr.getJSONObject(i);
+                if(obj.has(TITLE) && obj.has(DESCRIPTION) && obj.has(HREF)) {
+                    String title = obj.getString(TITLE);
+                    String desc = obj.getString(DESCRIPTION);
+                    String imgHref = obj.getString(HREF);
+                    allFeeds.add(new DataFeed(title, desc, imgHref));
+                }
+            }
+            //check whether all the rows are invalid
+            if(allFeeds.size() == 0) {
+                throw INVALID_JSON_DATA;
+            }
+        }
+
         Map<String, List<DataFeed>> result = new HashMap<>();
         result.put(feedTitle, allFeeds);
         return result;
