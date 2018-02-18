@@ -24,7 +24,9 @@ import java.util.List;
 
 public class DataFeedService extends IntentService {
 
-    private static final String FETCH_URL = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json";
+//    private static final String FETCH_URL = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json";
+
+    private static final String FETCH_URL = "http://192.168.1.6:8080/jsondata";
 
     private static final String ROWS = "rows";
 
@@ -105,4 +107,5 @@ public class DataFeedService extends IntentService {
         intent.putExtra(RESULT, feeds.toArray(new DataFeed[0]));
         sendBroadcast(intent);
     }
+
 }

@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -22,10 +24,12 @@ public class DataFeedActivity extends AppCompatActivity {
 
     private ListView feedsList;
 
+    private Menu menu;
+
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("Receiveddddddddddddddddddd", String.valueOf(context));
+            long start = System.currentTimeMillis();
             Bundle bundle = intent.getExtras();
             if(bundle != null) {
                 String title = bundle.getString(DataFeedService.TITLE);
@@ -44,14 +48,22 @@ public class DataFeedActivity extends AppCompatActivity {
                 List<DataFeed> feeds = new ArrayList<>();
                 for (int i = 0; i < result.length; i++) {
                     if(result[i] instanceof DataFeed) {
-                        feeds.add((DataFeed) result[i]);
+                        DataFeed feed = (DataFeed) result[i];
+                        if(feed.isFeedValid()) {
+                            feeds.add(feed);
+                        }
                     }
                 }
+                feedsList.invalidate();
                 DataFeedAdapter adapter = (DataFeedAdapter) feedsList.getAdapter();
                 adapter.refresh(feeds);
             } else {
                 Toast.makeText(DataFeedActivity.this, "Could not get the data from the feed", Toast.LENGTH_LONG).show();
             }
+            MenuItem refreshItem = menu.findItem(R.id.action_refresh);
+            refreshItem.setEnabled(true);
+            stopFeedService();
+            Toast.makeText(DataFeedActivity.this, "Finished in " + ((System.currentTimeMillis() - start)/1000) + " seconds", Toast.LENGTH_LONG).show();
         }
     };
 
@@ -66,10 +78,28 @@ public class DataFeedActivity extends AppCompatActivity {
         DataFeedAdapter adapter = new DataFeedAdapter(retainFragment, this, R.layout.activity_data_feed, feeds);
         feedsList.setAdapter(adapter);
         fetchFeeds();
-        Toast.makeText(this, "Starting fetch", Toast.LENGTH_LONG).show();
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        this.menu = menu;
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.action_refresh) {
+            item.setEnabled(false);
+            fetchFeeds();
+        }
+        return true;
     }
 
     private void fetchFeeds() {
+        Toast.makeText(this, "Fetching data...", Toast.LENGTH_LONG).show();
         Intent feedIntent = new Intent(this, DataFeedService.class);
         startService(feedIntent);
     }
@@ -84,5 +114,16 @@ public class DataFeedActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopFeedService();
+        super.onDestroy();
+    }
+
+    private void stopFeedService() {
+        Intent feedIntent = new Intent(this, DataFeedService.class);
+        stopService(feedIntent);
     }
 }

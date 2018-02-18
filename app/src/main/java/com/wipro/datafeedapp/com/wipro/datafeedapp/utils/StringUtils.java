@@ -15,4 +15,13 @@ public class StringUtils {
         return (val != null && val.trim().length() > 0);
     }
 
+    /**
+     * Returns true if the given string is equal to "null" ignoring case.
+     * @param value
+     * @return
+     */
+    public static boolean nullValue(String value) {
+        return "null".equals(value.toLowerCase().trim());
+    }
+
 }

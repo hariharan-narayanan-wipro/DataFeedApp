@@ -8,7 +8,7 @@ package com.wipro.datafeedapp.com.wipro.datafeedapp.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import static com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils.isValid;
+import static com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils.*;
 
 
 public class DataFeed implements Parcelable {
@@ -64,7 +64,7 @@ public class DataFeed implements Parcelable {
     }
 
     public void setTitle(String title) {
-        this.title = isValid(title) ? title : DEFAULT_TITLE;
+        this.title = isValid(title) && !nullValue(title) ? title : DEFAULT_TITLE;
     }
 
     public String getDescription() {
@@ -72,7 +72,7 @@ public class DataFeed implements Parcelable {
     }
 
     public void setDescription(String description) {
-        this.description = isValid(description) ? description : DEFAULT_DESC;
+        this.description = isValid(description) && !nullValue(description) ? description : DEFAULT_DESC;
     }
 
     public String getImageHref() {
@@ -80,7 +80,7 @@ public class DataFeed implements Parcelable {
     }
 
     public void setImageHref(String imageHref) {
-        this.imageHref = isValid(imageHref) ? imageHref : DEFUALT_HREF;
+        this.imageHref = isValid(imageHref) && !nullValue(imageHref) ? imageHref : DEFUALT_HREF;
     }
 
 
@@ -94,5 +94,11 @@ public class DataFeed implements Parcelable {
         parcel.writeString(this.getTitle());
         parcel.writeString(this.getDescription());
         parcel.writeString(this.getImageHref());
+    }
+
+    public boolean isFeedValid() {
+        return !title.trim().equals(DEFAULT_TITLE) &&
+                !description.trim().equals(DEFAULT_DESC) &&
+                !imageHref.trim().equals(DEFUALT_HREF);
     }
 }
