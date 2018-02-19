@@ -46,9 +46,7 @@ public class DataFeedActivity extends AppCompatActivity {
         feedsList = findViewById(R.id.feeds_list);
         showProgress(false);
         List<DataFeed> feeds = new ArrayList<>();
-        RetainFragment retainFragment =
-                RetainFragment.findOrCreateRetainFragment(getFragmentManager());
-        DataFeedAdapter adapter = new DataFeedAdapter(retainFragment, this, R.layout.activity_data_feed, feeds);
+        DataFeedAdapter adapter = new DataFeedAdapter(this, R.layout.activity_data_feed, feeds);
         feedsList.setAdapter(adapter);
         fetchFeeds();
 

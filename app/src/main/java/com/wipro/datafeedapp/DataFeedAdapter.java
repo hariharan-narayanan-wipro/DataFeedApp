@@ -3,7 +3,6 @@ package com.wipro.datafeedapp;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -18,6 +17,8 @@ import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * Custom Adapter class for the Data Feed App
@@ -29,16 +30,17 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
     //Map to cache the images.
     private Map<String, Bitmap> imageCache;
 
+    private Executor executor = Executors.newFixedThreadPool(50);
+
     //Bitmap image to display when the actual image could not be fetched.
     private Bitmap noImgBitmap;
 
-    public DataFeedAdapter(RetainFragment fragment, @NonNull Context context, int resource, @NonNull List<DataFeed> objects) {
+    public DataFeedAdapter(@NonNull Context context, int resource, @NonNull List<DataFeed> objects) {
         super(context, resource, objects);
-        this.imageCache = fragment.mRetainedCache;
+//        this.imageCache = fragment.mRetainedCache;
         if(this.imageCache == null) {
             this.imageCache = new HashMap<>();
             imageCache.put(DataFeed.NULL_IMAGE_REF, null);
-            fragment.mRetainedCache = this.imageCache;
         }
         try {
             //load the no image bitmap once
@@ -79,7 +81,7 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
             imgView.setImageBitmap(image);
         } else {
             ImageDownloadTask task = new ImageDownloadTask(this, imgView, imgUrl);
-            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            task.executeOnExecutor(executor);
         }
         return dataFeedView;
     }
@@ -90,7 +92,7 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
      * @param img
      * @param url
      */
-    public void updateImageView(ImageView imgView, Bitmap img, String url) {
+    public synchronized void updateImageView(ImageView imgView, Bitmap img, String url) {
         if(img == null) {
             img = this.noImgBitmap;
         }
