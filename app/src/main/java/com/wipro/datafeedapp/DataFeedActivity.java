@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
@@ -31,13 +33,18 @@ public class DataFeedActivity extends AppCompatActivity {
     //Main menu
     private Menu menu;
 
+    private ProgressBar progressBar;
+
     private FeedReceiver receiver = new FeedReceiver(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.feeds_list);
+        progressBar = findViewById(R.id.feed_progress);
+        progressBar.setIndeterminate(true);
         feedsList = findViewById(R.id.feeds_list);
+        showProgress(false);
         List<DataFeed> feeds = new ArrayList<>();
         RetainFragment retainFragment =
                 RetainFragment.findOrCreateRetainFragment(getFragmentManager());
@@ -69,6 +76,7 @@ public class DataFeedActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+            showProgress(true);
             Toast.makeText(this, "Fetching data...", Toast.LENGTH_LONG).show();
             //start the service from a separate thread so that it does not affect the main thread in case of connection problems
             new Thread() {
@@ -82,6 +90,14 @@ public class DataFeedActivity extends AppCompatActivity {
             DataFeed feed = new DataFeed("No Internet Connection", "Please check your Internet connection", DataFeed.NULL_IMAGE_REF);
             DataFeedAdapter adapter = (DataFeedAdapter) feedsList.getAdapter();
             adapter.refresh(Arrays.asList(feed));
+        }
+    }
+
+    public void showProgress(boolean show) {
+        if(show) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.INVISIBLE);
         }
     }
 

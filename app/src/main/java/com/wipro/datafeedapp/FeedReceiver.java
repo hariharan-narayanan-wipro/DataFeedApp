@@ -49,6 +49,7 @@ public class FeedReceiver extends BroadcastReceiver {
         activity.setMenuState(R.id.action_refresh, true);
         activity.stopFeedService();
         Toast.makeText(activity, "Finished in " + ((System.currentTimeMillis() - start)/1000) + " seconds", Toast.LENGTH_LONG).show();
+        activity.showProgress(false);
     }
 
     private void handleError(String errMsg) {
