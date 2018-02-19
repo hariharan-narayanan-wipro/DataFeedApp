@@ -63,11 +63,15 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+        View dataFeedView = convertView;
         DataFeed feed = getItem(position);
 
-        View dataFeedView = inflater.inflate(R.layout.activity_data_feed, parent, false);
+        //create a new view if the old view is null
+        if(convertView == null) {
+            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            dataFeedView = inflater.inflate(R.layout.activity_data_feed, parent, false);
+        }
+
         TextView titleView = dataFeedView.findViewById(R.id.titleView);
         titleView.setText(feed.getTitle());
         TextView descView = dataFeedView.findViewById(R.id.descriptionView);
@@ -75,14 +79,15 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
         ImageView imgView = dataFeedView.findViewById(R.id.imageView);
         String imgUrl = feed.getImageHref();
         Bitmap image = imageCache.get(imgUrl);
-        if(DataFeed.NULL_IMAGE_REF.equals(imgUrl)) {
+        if (DataFeed.NULL_IMAGE_REF.equals(imgUrl)) {
             imgView.setImageBitmap(image);
-        } else if(image != null) {
+        } else if (image != null) {
             imgView.setImageBitmap(image);
         } else {
             ImageDownloadTask task = new ImageDownloadTask(this, imgView, imgUrl);
             task.executeOnExecutor(executor);
         }
+
         return dataFeedView;
     }
 
@@ -102,3 +107,5 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
 
 
 }
+
+
