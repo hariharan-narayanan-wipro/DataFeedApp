@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class DataFeedService extends IntentService {
 
-    private static final String FETCH_URL = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json";
+    private static String FETCH_URL = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json";
 
 //    private static final String FETCH_URL = "http://192.168.1.6:8080/jsondata";
 
@@ -171,6 +171,17 @@ public class DataFeedService extends IntentService {
             intent.putExtra(ERROR_MSG, error);
         }
         sendBroadcast(intent);
+    }
+
+    /**
+     * This method is purely written for testing purposes. Not to be used elsewhere
+     * @param url
+     */
+    public static void setFetchUrl(String url) {
+        if(url == null) {
+            url = "http://abc.com"; //dummy url
+        }
+        FETCH_URL = url;
     }
 
 }

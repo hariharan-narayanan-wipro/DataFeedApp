@@ -138,7 +138,9 @@ public class DataFeedActivity extends AppCompatActivity {
      */
     public void setMenuState(int menuId, boolean state) {
         MenuItem refreshItem = menu.findItem(menuId);
-        refreshItem.setEnabled(state);
+        if(refreshItem != null) {
+            refreshItem.setEnabled(state);
+        }
     }
 
     /**
