@@ -88,6 +88,7 @@ public class DataFeedActivity extends AppCompatActivity {
             DataFeed feed = new DataFeed(StringUtils.getString(R.string.no_connection), StringUtils.getString(R.string.check_connection_msg), DataFeed.NULL_IMAGE_REF);
             DataFeedAdapter adapter = (DataFeedAdapter) feedsList.getAdapter();
             adapter.refresh(Arrays.asList(feed));
+            setMenuState(R.id.action_refresh, true);
         }
     }
 
@@ -135,6 +136,9 @@ public class DataFeedActivity extends AppCompatActivity {
      * @param state
      */
     public void setMenuState(int menuId, boolean state) {
+        if(menu == null) {
+            return;
+        }
         MenuItem refreshItem = menu.findItem(menuId);
         if(refreshItem != null) {
             refreshItem.setEnabled(state);
