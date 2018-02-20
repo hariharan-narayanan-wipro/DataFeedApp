@@ -1,14 +1,18 @@
-package com.wipro.datafeedapp.com.wipro.datafeedapp.model;
+package com.wipro.datafeedapp.model;
 
 /**
  * Model for the data feed.
  *
- */
+ **/
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import static com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils.*;
+import com.wipro.datafeedapp.R;
+import com.wipro.datafeedapp.utils.StringUtils;
+
+import static com.wipro.datafeedapp.utils.StringUtils.isValid;
+import static com.wipro.datafeedapp.utils.StringUtils.nullValue;
 
 
 public class DataFeed implements Parcelable {
@@ -17,11 +21,11 @@ public class DataFeed implements Parcelable {
     /**
      * Default values
      */
-    private static final String DEFAULT_TITLE = "No Title";
+    private static final String DEFAULT_TITLE = StringUtils.getString(R.string.default_title);
 
-    private static final String DEFAULT_DESC = "No Desc";
+    private static final String DEFAULT_DESC = StringUtils.getString(R.string.default_description);
 
-    private static final String DEFUALT_HREF = "No Image URL";
+    private static final String DEFUALT_HREF = StringUtils.getString(R.string.default_href);
 
     /**
      * This key is used to store a bitmap which is null in the data feed adapter.

@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Data Feed App</string>
+    <string name="default_title">No Title</string>
+    <string name="default_description">No Description</string>
+    <string name="default_href">No Image</string>
+    <string name="no_connection">No Internet Connection</string>
+    <string name="check_connection_msg">Please check your Internet connection</string>
+    <string name="null_json_msg">Could not get the JSON data from the server</string>
+    <string name="invalid_json_msg">Invalid JSON data</string>
+    <string name="no_data_available">No Data Available!!</string>
+    <string name="feed_service_name">Data Feed Service</string>
+    <string name="title_not_found">\'title\' property not found</string>
+    <string name="rows_not_found">\'rows\' property not found</string>
+    <string name="no_feeds_msg">No feed to show</string>
+    <string name="no_data_from_feed">Could not get the data from the feed</string>
+    <string name="error_feed_title">Error while fetching data!</string>
 </resources>

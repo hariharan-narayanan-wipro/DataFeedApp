@@ -1,11 +1,13 @@
-package com.wipro.datafeedapp;
+package com.wipro.datafeedapp.service;
 
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
-import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
-import com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils;
+import com.wipro.datafeedapp.HttpHandler;
+import com.wipro.datafeedapp.R;
+import com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.utils.StringUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,8 +29,6 @@ public class DataFeedService extends IntentService {
 
     private static String FETCH_URL = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json";
 
-//    private static final String FETCH_URL = "http://192.168.1.6:8080/jsondata";
-
     private static final String ROWS = "rows";
 
     public static final String TITLE = "title";
@@ -45,17 +45,17 @@ public class DataFeedService extends IntentService {
 
     public static final String ERROR_MSG = "ERROR_MSG";
 
-    private static final String NULL_JSON_MSG = "Could not get the JSON data from the server";
+    private static final String NULL_JSON_MSG = StringUtils.getString(R.string.null_json_msg);
 
-    private static final Exception INVALID_JSON_DATA = new Exception("Invalid JSON data");
+    private static final Exception INVALID_JSON_DATA = new Exception(StringUtils.getString(R.string.invalid_json_msg));
 
-    private static final String NO_DATA_AVAILABLE = "No Data Available!!";
+    private static final String NO_DATA_AVAILABLE = StringUtils.getString(R.string.no_data_available);
 
     public enum STATUS {OK, ERROR};
 
 
     public DataFeedService() {
-        this("Data Feed Service");
+        this(StringUtils.getString(R.string.feed_service_name));
     }
 
     public DataFeedService(String name) {
@@ -128,18 +128,18 @@ public class DataFeedService extends IntentService {
         if(data.has(TITLE)) {
             feedTitle = data.getString(TITLE);
         } else {
-            throw new Exception("'title' property not found", INVALID_JSON_DATA);
+            throw new Exception(StringUtils.getString(R.string.title_not_found), INVALID_JSON_DATA);
         }
         if(!StringUtils.isValid(feedTitle)) {
             feedTitle = FETCH_URL;
         }
         List<DataFeed> allFeeds = new ArrayList<>();
         if(!data.has(ROWS)) {
-            throw new Exception("'rows' property not found", INVALID_JSON_DATA);
+            throw new Exception(StringUtils.getString(R.string.rows_not_found), INVALID_JSON_DATA);
         }
         JSONArray feedsArr = data.getJSONArray(ROWS);
         if(feedsArr.length() == 0) {
-            allFeeds.add(new DataFeed( NO_DATA_AVAILABLE, "No feed to show", DataFeed.NULL_IMAGE_REF));
+            allFeeds.add(new DataFeed( NO_DATA_AVAILABLE, StringUtils.getString(R.string.no_feeds_msg), DataFeed.NULL_IMAGE_REF));
         } else {
             for (int i = 0; i < feedsArr.length(); i++) {
                 JSONObject obj = feedsArr.getJSONObject(i);

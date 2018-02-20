@@ -13,10 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
-import com.wipro.datafeedapp.com.wipro.datafeedapp.utils.StringUtils;
+import com.wipro.datafeedapp.adapter.DataFeedAdapter;
+import com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.service.DataFeedService;
+import com.wipro.datafeedapp.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,7 +76,6 @@ public class DataFeedActivity extends AppCompatActivity {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
             showProgress(true);
-            Toast.makeText(this, "Fetching data...", Toast.LENGTH_LONG).show();
             //start the service from a separate thread so that it does not affect the main thread in case of connection problems
             new Thread() {
                 @Override
@@ -85,7 +85,7 @@ public class DataFeedActivity extends AppCompatActivity {
                 }
             }.start();
         } else {
-            DataFeed feed = new DataFeed("No Internet Connection", "Please check your Internet connection", DataFeed.NULL_IMAGE_REF);
+            DataFeed feed = new DataFeed(StringUtils.getString(R.string.no_connection), StringUtils.getString(R.string.check_connection_msg), DataFeed.NULL_IMAGE_REF);
             DataFeedAdapter adapter = (DataFeedAdapter) feedsList.getAdapter();
             adapter.refresh(Arrays.asList(feed));
         }

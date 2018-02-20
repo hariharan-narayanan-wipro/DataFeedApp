@@ -1,9 +1,12 @@
-package com.wipro.datafeedapp;
+package com.wipro.datafeedapp.task;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.widget.ImageView;
+
+import com.wipro.datafeedapp.HttpHandler;
+import com.wipro.datafeedapp.adapter.DataFeedAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +42,6 @@ public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
             Bitmap bmp = BitmapFactory.decodeStream(stream);
             return bmp;
         } catch(Exception ex) {
-//            ex.printStackTrace();
         } finally {
             if(stream != null) {
                 try {

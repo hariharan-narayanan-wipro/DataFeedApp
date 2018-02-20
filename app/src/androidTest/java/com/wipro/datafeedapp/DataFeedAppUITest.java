@@ -5,7 +5,8 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.ListView;
 
-import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.service.DataFeedService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

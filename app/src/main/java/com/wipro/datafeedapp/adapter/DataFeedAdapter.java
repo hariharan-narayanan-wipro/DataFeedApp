@@ -1,4 +1,4 @@
-package com.wipro.datafeedapp;
+package com.wipro.datafeedapp.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -12,7 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.task.ImageDownloadTask;
+import com.wipro.datafeedapp.R;
+import com.wipro.datafeedapp.model.DataFeed;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +39,6 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
 
     public DataFeedAdapter(@NonNull Context context, int resource, @NonNull List<DataFeed> objects) {
         super(context, resource, objects);
-//        this.imageCache = fragment.mRetainedCache;
         if(this.imageCache == null) {
             this.imageCache = new HashMap<>();
             imageCache.put(DataFeed.NULL_IMAGE_REF, null);

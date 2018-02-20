@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".app.DataFeedApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -22,7 +23,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".DataFeedService" android:exported="false"/>
+        <service android:name=".service.DataFeedService" android:exported="false"/>
     </application>
 
 </manifest>

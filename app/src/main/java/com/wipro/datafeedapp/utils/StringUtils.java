@@ -1,4 +1,6 @@
-package com.wipro.datafeedapp.com.wipro.datafeedapp.utils;
+package com.wipro.datafeedapp.utils;
+
+import com.wipro.datafeedapp.app.DataFeedApp;
 
 /**
  * Utility class for common String operations.
@@ -23,6 +25,10 @@ public class StringUtils {
      */
     public static boolean nullValue(String value) {
         return "null".equals(value.toLowerCase().trim());
+    }
+
+    public static String getString(int stringResId) {
+        return DataFeedApp.getInstance().getString(stringResId);
     }
 
 }

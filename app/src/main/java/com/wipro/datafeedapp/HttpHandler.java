@@ -11,6 +11,9 @@ import java.net.URL;
 
 public class HttpHandler {
 
+    //Http header key for location
+    private static final String LOCATION_HEADER = "Location";
+
     private String urlString;
 
     public HttpHandler(String urlString) {
@@ -25,7 +28,7 @@ public class HttpHandler {
         if(respCode == HttpURLConnection.HTTP_MOVED_PERM ||
                 respCode == HttpURLConnection.HTTP_MOVED_TEMP ||
                 respCode == HttpURLConnection.HTTP_SEE_OTHER) {
-            String newUrl = conn.getHeaderField("Location");
+            String newUrl = conn.getHeaderField(LOCATION_HEADER);
             conn = (HttpURLConnection) new URL(newUrl).openConnection();
         }
         return conn.getInputStream();

@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.wipro.datafeedapp.com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.adapter.DataFeedAdapter;
+import com.wipro.datafeedapp.model.DataFeed;
+import com.wipro.datafeedapp.service.DataFeedService;
+import com.wipro.datafeedapp.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,17 +46,16 @@ public class FeedReceiver extends BroadcastReceiver {
             }
 
         } else {
-            Toast.makeText(activity, "Could not get the data from the feed", Toast.LENGTH_LONG).show();
+            handleError(StringUtils.getString(R.string.no_data_from_feed));
         }
         activity.setMenuState(R.id.action_refresh, true);
         activity.stopFeedService();
-        Toast.makeText(activity, "Finished in " + ((System.currentTimeMillis() - start)/1000) + " seconds", Toast.LENGTH_LONG).show();
         activity.showProgress(false);
     }
 
     private void handleError(String errMsg) {
         activity.updateTitle(activity.getResources().getString(R.string.app_name));
-        List<DataFeed> errorFeed = Arrays.asList(new DataFeed("Error while fetching data!", errMsg, DataFeed.NULL_IMAGE_REF));
+        List<DataFeed> errorFeed = Arrays.asList(new DataFeed(StringUtils.getString(R.string.error_feed_title), errMsg, DataFeed.NULL_IMAGE_REF));
         refreshData(errorFeed);
     }
 
