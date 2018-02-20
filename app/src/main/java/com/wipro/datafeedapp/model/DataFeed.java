@@ -1,9 +1,6 @@
 package com.wipro.datafeedapp.model;
 
-/**
- * Model for the data feed.
- *
- **/
+
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -12,9 +9,12 @@ import com.wipro.datafeedapp.R;
 import com.wipro.datafeedapp.utils.StringUtils;
 
 import static com.wipro.datafeedapp.utils.StringUtils.isValid;
-import static com.wipro.datafeedapp.utils.StringUtils.nullValue;
+import static com.wipro.datafeedapp.utils.StringUtils.notNullValue;
 
-
+/**
+ * Model for the data feed.
+ *
+ **/
 public class DataFeed implements Parcelable {
 
 
@@ -25,7 +25,7 @@ public class DataFeed implements Parcelable {
 
     private static final String DEFAULT_DESC = StringUtils.getString(R.string.default_description);
 
-    private static final String DEFUALT_HREF = StringUtils.getString(R.string.default_href);
+    private static final String DEFAULT_HREF = StringUtils.getString(R.string.default_href);
 
     /**
      * This key is used to store a bitmap which is null in the data feed adapter.
@@ -74,7 +74,7 @@ public class DataFeed implements Parcelable {
     }
 
     public void setTitle(String title) {
-        this.title = isValid(title) && !nullValue(title) ? title : DEFAULT_TITLE;
+        this.title = isValid(title) && notNullValue(title) ? title : DEFAULT_TITLE;
     }
 
     public String getDescription() {
@@ -82,7 +82,7 @@ public class DataFeed implements Parcelable {
     }
 
     public void setDescription(String description) {
-        this.description = isValid(description) && !nullValue(description) ? description : DEFAULT_DESC;
+        this.description = isValid(description) && notNullValue(description) ? description : DEFAULT_DESC;
     }
 
     public String getImageHref() {
@@ -90,7 +90,7 @@ public class DataFeed implements Parcelable {
     }
 
     public void setImageHref(String imageHref) {
-        this.imageHref = isValid(imageHref) && !nullValue(imageHref) ? imageHref : DEFUALT_HREF;
+        this.imageHref = isValid(imageHref) && notNullValue(imageHref) ? imageHref : DEFAULT_HREF;
     }
 
 
@@ -100,7 +100,7 @@ public class DataFeed implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int falgs) {
+    public void writeToParcel(Parcel parcel, int flags) {
         parcel.writeString(this.getTitle());
         parcel.writeString(this.getDescription());
         parcel.writeString(this.getImageHref());
@@ -109,6 +109,6 @@ public class DataFeed implements Parcelable {
     public boolean isFeedValid() {
         return !(title.trim().equals(DEFAULT_TITLE) &&
                 description.trim().equals(DEFAULT_DESC) &&
-                imageHref.trim().equals(DEFUALT_HREF));
+                imageHref.trim().equals(DEFAULT_HREF));
     }
 }

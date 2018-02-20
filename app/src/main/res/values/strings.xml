@@ -14,4 +14,7 @@
     <string name="no_feeds_msg">No feed to show</string>
     <string name="no_data_from_feed">Could not get the data from the feed</string>
     <string name="error_feed_title">Error while fetching data!</string>
+    <string name="img_view_desc">Image for the feed</string>
+    <string name="refresh_tooltip">Refresh</string>
+    <string name="default_text_view_text">TextView</string>
 </resources>

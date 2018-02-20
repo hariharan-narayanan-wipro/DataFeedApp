@@ -20,7 +20,7 @@ import com.wipro.datafeedapp.service.DataFeedService;
 import com.wipro.datafeedapp.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +36,7 @@ public class DataFeedActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
 
-    private FeedReceiver receiver = new FeedReceiver(this);
+    private final FeedReceiver receiver = new FeedReceiver(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class DataFeedActivity extends AppCompatActivity {
     private void fetchFeeds() {
         //start the service only when the network connection is working
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo activeNetworkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
         if(activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
             showProgress(true);
             //start the service from a separate thread so that it does not affect the main thread in case of connection problems
@@ -87,7 +87,7 @@ public class DataFeedActivity extends AppCompatActivity {
         } else {
             DataFeed feed = new DataFeed(StringUtils.getString(R.string.no_connection), StringUtils.getString(R.string.check_connection_msg), DataFeed.NULL_IMAGE_REF);
             DataFeedAdapter adapter = (DataFeedAdapter) feedsList.getAdapter();
-            adapter.refresh(Arrays.asList(feed));
+            adapter.refresh(Collections.singletonList(feed));
             setMenuState(R.id.action_refresh, true);
         }
     }
@@ -132,8 +132,8 @@ public class DataFeedActivity extends AppCompatActivity {
 
     /**
      * Sets the menu item specified by menuId to enabled or disabled state
-     * @param menuId
-     * @param state
+     * @param menuId id of the menu
+     * @param state true or false indicating enabled/disabled state
      */
     public void setMenuState(int menuId, boolean state) {
         if(menu == null) {
@@ -147,7 +147,7 @@ public class DataFeedActivity extends AppCompatActivity {
 
     /**
      * Updates the title for the action bar.
-     * @param newTitle
+     * @param newTitle the new value for title
      */
     public void updateTitle(String newTitle) {
         if(StringUtils.isValid(newTitle)) {

@@ -51,7 +51,7 @@ public class DataFeedService extends IntentService {
 
     private static final String NO_DATA_AVAILABLE = StringUtils.getString(R.string.no_data_available);
 
-    public enum STATUS {OK, ERROR};
+    public enum STATUS {OK, ERROR}
 
 
     public DataFeedService() {
@@ -98,7 +98,7 @@ public class DataFeedService extends IntentService {
             }
             reader = new InputStreamReader(stream);
             StringBuilder jsonStr = new StringBuilder();
-            int next = -1;
+            int next;
             while ((next = reader.read()) != -1) {
                 jsonStr.append((char) next);
             }
@@ -123,7 +123,7 @@ public class DataFeedService extends IntentService {
     // parse the feed json and create DataFeed objects.Put it against the title as the key in the map
     // and return the result
     private Map<String, List<DataFeed>> parseFeeds(String jsonStr) throws Exception {
-        JSONObject data = new JSONObject(jsonStr.toString());
+        JSONObject data = new JSONObject(jsonStr);
         String feedTitle = null;
         if(data.has(TITLE)) {
             feedTitle = data.getString(TITLE);
@@ -175,7 +175,7 @@ public class DataFeedService extends IntentService {
 
     /**
      * This method is purely written for testing purposes. Not to be used elsewhere
-     * @param url
+     * @param url URL string to be used to fetch data from
      */
     public static void setFetchUrl(String url) {
         if(url == null) {

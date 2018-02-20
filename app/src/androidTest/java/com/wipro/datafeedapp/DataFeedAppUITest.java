@@ -3,6 +3,7 @@ package com.wipro.datafeedapp;
 import android.content.Intent;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.app.ActionBar;
 import android.widget.ListView;
 
 import com.wipro.datafeedapp.model.DataFeed;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -32,7 +34,9 @@ public class DataFeedAppUITest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        String title = (String) rule.getActivity().getSupportActionBar().getTitle();
+        ActionBar supportActionBar = rule.getActivity().getSupportActionBar();
+        assertNotNull(supportActionBar);
+        String title = (String) supportActionBar.getTitle();
         assertEquals("About Canada", title);
         ListView feedsList = rule.getActivity().getFeedsList();
         assertTrue("Feed count should be more than 1 but was only " + feedsList.getCount(), feedsList.getCount() > 1);
@@ -50,7 +54,9 @@ public class DataFeedAppUITest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        String title = (String) rule.getActivity().getSupportActionBar().getTitle();
+        ActionBar supportActionBar = rule.getActivity().getSupportActionBar();
+        assertNotNull(supportActionBar);
+        String title = (String) supportActionBar.getTitle();
         assertEquals("Data Feed App", title);
         ListView feedsList = rule.getActivity().getFeedsList();
         assertTrue("Feed count should be only 1 " + feedsList.getCount(), feedsList.getCount() == 1);

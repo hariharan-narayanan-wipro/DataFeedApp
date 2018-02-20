@@ -32,7 +32,7 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
     //Map to cache the images.
     private Map<String, Bitmap> imageCache;
 
-    private Executor executor = Executors.newFixedThreadPool(50);
+    private final Executor executor = Executors.newFixedThreadPool(50);
 
     //Bitmap image to display when the actual image could not be fetched.
     private Bitmap noImgBitmap;
@@ -53,7 +53,7 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
 
     /**
      * Refreshes the list view with the new set of data
-     * @param newData
+     * @param newData new set of data to be used
      */
     public void refresh(List<DataFeed> newData) {
         clear();
@@ -66,18 +66,28 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View dataFeedView = convertView;
         DataFeed feed = getItem(position);
+        if(feed == null) {
+            feed = new DataFeed();
+        }
+        FeedViewHolder viewHolder;
 
         //create a new view if the old view is null
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            //noinspection ConstantConditions
             dataFeedView = inflater.inflate(R.layout.activity_data_feed, parent, false);
+            viewHolder = new FeedViewHolder();
+            viewHolder.setTitleView((TextView) dataFeedView.findViewById(R.id.titleView));
+            viewHolder.setDescriptionView((TextView) dataFeedView.findViewById(R.id.descriptionView));
+            viewHolder.setImageView((ImageView) dataFeedView.findViewById(R.id.imageView));
+            dataFeedView.setTag(viewHolder);
+        } else {
+            viewHolder = (FeedViewHolder) dataFeedView.getTag();
         }
 
-        TextView titleView = dataFeedView.findViewById(R.id.titleView);
-        titleView.setText(feed.getTitle());
-        TextView descView = dataFeedView.findViewById(R.id.descriptionView);
-        descView.setText(feed.getDescription());
-        ImageView imgView = dataFeedView.findViewById(R.id.imageView);
+        viewHolder.getTitleView().setText(feed.getTitle());
+        viewHolder.getDescriptionView().setText(feed.getDescription());
+        ImageView imgView = viewHolder.getImageView();
         String imgUrl = feed.getImageHref();
         Bitmap image = imageCache.get(imgUrl);
         if (DataFeed.NULL_IMAGE_REF.equals(imgUrl)) {
@@ -94,9 +104,9 @@ public class DataFeedAdapter extends ArrayAdapter<DataFeed> {
 
     /**
      * Method where the image is added to the map and set to the view for the first time.
-     * @param imgView
-     * @param img
-     * @param url
+     * @param imgView ImageView instance
+     * @param img Bitmap image instance
+     * @param url URL string for the image
      */
     public synchronized void updateImageView(ImageView imgView, Bitmap img, String url) {
         if(img == null) {

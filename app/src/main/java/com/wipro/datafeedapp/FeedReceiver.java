@@ -13,7 +13,7 @@ import com.wipro.datafeedapp.service.DataFeedService;
 import com.wipro.datafeedapp.utils.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class FeedReceiver extends BroadcastReceiver {
 
-    private DataFeedActivity activity;
+    private final DataFeedActivity activity;
 
     public FeedReceiver(DataFeedActivity activity) {
         this.activity = activity;
@@ -31,7 +31,6 @@ public class FeedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        long start = System.currentTimeMillis();
         Bundle bundle = intent.getExtras();
         if(bundle != null) {
             DataFeedService.STATUS status = (DataFeedService.STATUS) bundle.get(DataFeedService.STATUS_KEY);
@@ -55,12 +54,12 @@ public class FeedReceiver extends BroadcastReceiver {
 
     private void handleError(String errMsg) {
         activity.updateTitle(activity.getResources().getString(R.string.app_name));
-        List<DataFeed> errorFeed = Arrays.asList(new DataFeed(StringUtils.getString(R.string.error_feed_title), errMsg, DataFeed.NULL_IMAGE_REF));
+        List<DataFeed> errorFeed = Collections.singletonList(new DataFeed(StringUtils.getString(R.string.error_feed_title), errMsg, DataFeed.NULL_IMAGE_REF));
         refreshData(errorFeed);
     }
 
     private void updateFeeds(Parcelable[] result) {
-        List<DataFeed> feeds = new ArrayList<>();
+        final List<DataFeed> feeds = new ArrayList<>();
         for (int i = 0; i < result.length; i++) {
             if(result[i] instanceof DataFeed) {
                 DataFeed feed = (DataFeed) result[i];

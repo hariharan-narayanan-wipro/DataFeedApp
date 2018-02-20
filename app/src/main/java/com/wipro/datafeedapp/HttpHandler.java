@@ -14,7 +14,7 @@ public class HttpHandler {
     //Http header key for location
     private static final String LOCATION_HEADER = "Location";
 
-    private String urlString;
+    private final String urlString;
 
     public HttpHandler(String urlString) {
         this.urlString = urlString;

@@ -19,11 +19,11 @@ import java.io.InputStream;
 
 public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
 
-    private DataFeedAdapter adapter;
+    private final DataFeedAdapter adapter;
 
-    private ImageView imgView;
+    private final ImageView imgView;
 
-    private String imgUrl;
+    private final String imgUrl;
 
     public ImageDownloadTask(DataFeedAdapter adapter, ImageView imgView, String imgUrl) {
         this.adapter = adapter;
@@ -39,9 +39,9 @@ public class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap> {
             if(stream == null) {
                 return null;
             }
-            Bitmap bmp = BitmapFactory.decodeStream(stream);
-            return bmp;
+            return BitmapFactory.decodeStream(stream);
         } catch(Exception ex) {
+            //do nothing
         } finally {
             if(stream != null) {
                 try {

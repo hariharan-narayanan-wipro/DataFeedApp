@@ -11,7 +11,7 @@ public class StringUtils {
 
     /**
      * Returns whether the given string is not null and not empty
-     * @param val
+     * @param val the value passed in
      * @return true if the value is not null and not empty (after trimming), false otherwise
      */
     public static boolean isValid(String val) {
@@ -20,11 +20,14 @@ public class StringUtils {
 
     /**
      * Returns true if the given string is equal to "null" ignoring case.
-     * @param value
-     * @return
+     * @param value the value passed in
+     * @return true if the passed string does not equal the string literal "null" ignoring the case, false otherwise
      */
-    public static boolean nullValue(String value) {
-        return "null".equals(value.toLowerCase().trim());
+    public static boolean notNullValue(String value) {
+        if(value == null) {
+            value = "null"; //return false in this case
+        }
+        return !"null".equals(value.toLowerCase().trim());
     }
 
     public static String getString(int stringResId) {
